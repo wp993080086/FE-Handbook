@@ -88,18 +88,76 @@ this.$scopedSlots
 
 # 3. 设置属性或方法
 
-1. 向响应式对象中添加一个属性，并触发视图更新
+1. $set
 
-参数为，要改变的对象或者数组，要添加的属性名或者索引，要添加的值
+向响应式对象中添加一个属性，并触发视图更新，参数为：要改变的对象或者数组，要添加的属性名或者索引，要添加的值。
+
+语法：
 
 ```javascript
 this.$set( target, propertyName / index, value )
 ```
 
-2. 向响应式对象中删除一个属性，并触发视图更新
-
-参数为，要删除的对象或者数组，要删除的属性名或者索引
+例子：
 
 ```javascript
+<script>
+export default {
+  name: 'Home',
+  data() {
+    return {
+      userObj: {
+        name: '张三',
+        age: 18
+      },
+      userList: [
+        { name: '张三', age: 18, gender: '男' },
+        { name: '李四', age: 19, gender: '女' }
+      ]
+    }
+  },
+  methods: {
+    setGender() {
+      this.$set(this.userObj, 'gender', '男')
+      this.$set(this.userList, 1, { name: '王五', age: 20, gender: '男' })
+    }
+  }
+}
+</script>
+```
+
+2. $delete
+
+向响应式对象中删除一个属性，并触发视图更新，参数为：要删除的对象或者数组，要删除的属性名或者索引。
+
+语法：
+```javascript
 this.$delete( target, propertyName / index )
+```
+
+例子：
+
+```javascript
+export default {
+  name: 'Home',
+  data() {
+    return {
+      userObj: {
+        name: '张三',
+        age: 18
+      },
+      userList: [
+        { name: '张三', age: 18, gender: '男' },
+        { name: '李四', age: 19, gender: '女' }
+      ]
+    }
+  },
+  methods: {
+    setGender() {
+      this.$delete(this.userObj, 'age')
+      this.$delete(this.userList, 1)
+    }
+  }
+}
+</script>
 ```
