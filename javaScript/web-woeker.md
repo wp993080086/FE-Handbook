@@ -106,6 +106,9 @@ self.close()
 
 ## 4.4、使用Shared Worker
 
+SharedWorker允许多个页面共享同一个后台线程，从而实现更高效的资源利用和协同计算。
+
+
 ## 4.5、调试Shared Worker
 
 ## 4.6、使用Service Worker
