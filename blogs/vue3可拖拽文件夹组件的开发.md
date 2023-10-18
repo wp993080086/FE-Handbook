@@ -267,25 +267,3 @@ const treeOption = {
 如上，基本的样式和功能就全部完成了。
 
 ---
-
-**本次分享就到这儿啦，我是鹏多多，如果您看了觉得有帮助，欢迎评论，关注，点赞，转发，我们下次见~**
-
-
-==往期文章==
-+ [Vue2全家桶+Element搭建的PC端在线音乐网站](https://blog.csdn.net/pdd11997110103/article/details/121667524)
-+ [vue3+element-plus配置cdn](https://blog.csdn.net/pdd11997110103/article/details/122440666)
-+ [助你上手Vue3全家桶之Vue3教程](https://blog.csdn.net/pdd11997110103/article/details/121035412)
-+ [助你上手Vue3全家桶之VueX4教程](https://blog.csdn.net/pdd11997110103/article/details/121036145)
-+ [助你上手Vue3全家桶之Vue-Router4教程](https://blog.csdn.net/pdd11997110103/article/details/121036684)
-+ [超详细！Vue的九种通信方式](https://blog.csdn.net/pdd11997110103/article/details/113563786)
-+ [超详细！Vuex手把手教程](https://blog.csdn.net/pdd11997110103/article/details/118677514)
-+ [使用nvm管理node.js版本以及更换npm淘宝镜像源](https://blog.csdn.net/pdd11997110103/article/details/115981856)
-+  [vue中利用.env文件存储全局环境变量，以及配置vue启动和打包命令](https://blog.csdn.net/pdd11997110103/article/details/116002824)
-+ [超详细！Vue-Router手把手教程](https://blog.csdn.net/pdd11997110103/article/details/119386246)
-
-==个人主页==
-+ [CSDN](https://blog.csdn.net/pdd11997110103?spm=1010.2135.3001.5421)
-+ [GitHub](https://github.com/wp993080086)
-+ [简书](https://www.jianshu.com/u/b7a8536bff06)
-+ [博客园](https://www.cnblogs.com/-pdd/)
-+ [掘金](https://juejin.cn/user/747323639737191)
