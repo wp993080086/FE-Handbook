@@ -364,6 +364,6 @@ const webWorker = new Worker(new URL('../utils/worker.ts', import.meta.url), {
 
 # 7、后语
 
-在本文中，我们学习了Web Worker的作用和使用方法，以及如何在Vue中使用Web Worker，最后，我们还学习了sharedWorker的使用方法，希望对大家有所帮助。
+在本文中，我们学习了Web Worker的作用和使用方法，以及如何在Vue中使用Web Worker，最后，我们还学习了Shared Worker的使用方法，希望对大家有所帮助。
 
 > PS：其实webworker家族里还有一位更加强大的成员，那就是Service Worker。它可以做的东西很多，比如拦截全局的fetch事件、缓存静态资源/离线缓存用于首屏加载、后台同步，消息推送等等，奈何篇幅有限，下回再做讲解。
