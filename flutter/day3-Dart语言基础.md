@@ -3,7 +3,13 @@
 1. [变量声明](#1-变量声明)
 2. [操作符](#2-操作符)
 3. [数据类型](#3-数据类型)
-4. [函数](#4-函数)
+4. [控制流](#4-控制流)
+5. [错误处理和捕获](#5-错误处理和捕获)
+6. [函数](#6-函数)
+7. [mixin](#7-mixin)
+8. [异步](#8-异步)
+    1. [Future](#8-1-future)
+    1. [Stream](#8-2-stream)
 ---
 
 # 1. 变量声明
@@ -100,6 +106,29 @@ class Test() {
 
 ```dart
 fun?.call()
+```
+
+- 特殊声明模式
+
+```dart
+// 同时声明
+var (a, [b, c]) = ('str', [1, 2])
+
+// 同时声明
+var (c, d) = ('left', 'right');
+
+// 交换2个值
+(c, d)  = (d, c)
+
+// 解构
+var (name, age) = userInfo(json)
+
+// 省略符 
+var (a, b, ...rest) = [1, 2, 3, 4, 5, 6] // 1 2 [3,4,5,6]
+
+var (a, b, ...rest, c, d) = [1, 2, 3, 4, 5, 6] // 1 2 [3,4] 5 6
+
+var (a, b, ..., c, d) = [1, 2, 3, 4, 5, 6] // 1 2 5 6
 ```
 
 # 2. 操作符
@@ -237,4 +266,330 @@ button?.scrollIntoView();
 |record|记录|
 |typedef|类型别名|
 
-# 4. 函数
+# 4. 控制流
+
+- switch
+
+```dart
+int size = 2;
+
+// 条件判断
+switch (size) {
+  case 1:
+    print('一');
+  case [2, 3]:
+    print('二 and 三')
+  case [4 || 5]:
+    print('四 or 五')
+  case >= 6 && <= 10
+    print('六 to 十')
+}
+
+// 条件赋值
+var bg = Color.green
+
+var isPrimary = switch (bg) {
+  Color.red || Color.yellow || Color.blue => true,
+  _ => false
+}
+```
+
+- for
+
+```dart
+var message = StringBuffer('Dart is fun');
+
+for (var i = 0; i < 5; i++) {
+  message.write('!');
+}
+```
+
+- fon-in
+
+```dart
+Map<String, int> listMap = {
+  'a': 23,
+  'b': 100,
+};
+
+for (final MapEntry(key: key, value: value) in listMap.entries) {
+  print('键：$key 值：$value');
+}
+```
+
+- while
+
+```dart
+while (!isDone()) {
+  doSomething();
+}
+```
+
+- do-while
+
+```dart
+do {
+  printLine();
+} while (!atEndOfPage());
+```
+
+- 跳过和停止
+
+```dart
+while (true) {
+  if (shutDownRequested()) break;
+  processIncomingRequests();
+}
+
+for (int i = 0; i < candidates.length; i++) {
+  var candidate = candidates[i];
+  if (candidate.yearsExperience < 5) {
+    continue;
+  }
+  candidate.interview();
+}
+```
+
+- if
+
+```dart
+if (isRaining()) {
+  you.bringRainCoat();
+} else if (isSnowing()) {
+  you.wearJacket();
+} else {
+  car.putTopDown();
+}
+```
+
+- if-case
+
+```dart
+// 接受一个名为pair的参数。如果pair的类型是[int x, int y]，则返回一个Point(x, y)对象
+if (pair case [int x, int y]) return Point(x, y);
+```
+
+# 5. 错误处理和捕获
+
+异常捕获和JavaScript差不多
+
+```dart
+try {
+  breedMoreLlamas();
+} on OutOfLlamasException {
+  // 特定的异常
+  buyMoreLlamas();
+} on Exception catch (e) {
+  // 任何其他的例外
+  print('Unknown exception: $e');
+} catch (e) {
+  // 没有指定类型，处理所有类型
+  print('Something really unknown: $e');
+} finally {
+  cleanLlamaStalls();
+}
+```
+
+- 若要部分处理异常， 同时允许它传播， 使用关键字：rethrow
+
+```dart
+void misbehave() {
+  try {
+    dynamic foo = true;
+    print(foo++); // 运行时错误
+  } catch (e) {
+    print('misbehave() partially handled ${e.runtimeType}.');
+    rethrow; // 允许调用者看到异常
+  }
+}
+
+void main() {
+  try {
+    misbehave();
+  } catch (e) {
+    print('main() finished handling ${e.runtimeType}.');
+  }
+}
+```
+
+- 断言
+
+在开发过程中，使用断言语句，如果布尔条件为false，则触发。如果条件为true，则不触发。在生产代码中，断言将被忽略。
+
+```dart
+// assert(条件, 可选消息)
+var sizi = 101;
+assert(size < 100, "Error：size 小于 100！");
+```
+
+# 6. 函数
+
+Dart是一种真正的面向对象的语言，所以即使是函数也是对象，并且有一个类型Function。这意味着函数可以赋值给变量或作为参数传递给其他函数，这是函数式编程的典型特征。
+
+- 函数声明
+
+```dart
+bool isNoble(int ) {
+  return atomicNumber > 40;
+}
+
+bool isNoble (int atomicNumber) => atomicNumber > 40;
+```
+
+- 函数作为参数传递
+
+```dart
+//定义函数execute，它的参数类型为函数
+void execute(var callback) {
+  // 执行传入的函数
+  callback();
+}
+
+// 调用execute，将箭头函数作为参数传递
+execute(() => print("xxx"))
+```
+
+- 可选的位置参数
+
+```dart
+String say(String a, String b, [String? c]) {
+  var result = '$a and $b';
+  if (c != null) {
+    result = '$result and $c';
+  }
+  return result;
+}
+```
+
+- 可选的命名参数
+
+```dart
+//设置[a]和[b]标志
+void enableFlags({bool a, bool b}) {
+  // ... 
+}
+
+// 调用函数时，可以使用指定命名参数
+enableFlags(bold: true, hidden: false)
+```
+
+# 7. mixin
+
+Dart 是不支持多继承的，但是它支持 mixin。可以定义几个 mixin，然后通过 with 关键字将它们组合成不同的类（同名会被最后的覆盖）。如下例子：
+
+```dart
+class Person {
+  say() {
+    print('say');
+  }
+}
+
+mixin Eat {
+  eat() {
+    print('eat');
+  }
+}
+
+mixin Walk {
+  walk() {
+    print('walk');
+  }
+}
+
+mixin Code {
+  code() {
+    print('key');
+  }
+}
+
+class Dog with Eat, Walk{}
+class Man extends Person with Eat, Walk, Code{}
+```
+
+# 8. 异步
+
+Dart类库有非常多的返回Future或者Stream对象的函数，这些函数被称为异步函数。
+
+## 8-1. Future
+
+Future与JavaScript中的Promise非常相似。
+
+```dart
+// 使用Future.delayed 创建了一个延时任务，2秒后返回结果字符串，然后在then中接收异步结果并打印
+Future.delayed(Duration(seconds: 2),(){
+  return "hi world!";
+}).then((data){
+  // 执行成功
+  print(data);
+}).catchError((e){
+   //执行失败会走到这里  
+   print(e);
+}).whenComplete((){
+   //无论成功或失败都会走到这里
+});
+```
+
+- 多个异步：Future.wait
+
+```dart
+Future.wait([
+  // 2秒后返回结果  
+  Future.delayed(Duration(seconds: 2), () {
+    return "hello";
+  }),
+  // 4秒后返回结果  
+  Future.delayed(Duration(seconds: 4), () {
+    return " world";
+  })
+]).then((results){
+  print(results[0]+results[1]);
+}).catchError((e){
+  print(e);
+});
+```
+
+- 解决回调地狱：async/await
+
+```dart
+task() async {
+  try{
+    String id = await login("alice","******");
+    String userInfo = await getUserInfo(id);
+    await saveUserInfo(userInfo);
+    // 执行接下来的操作
+  } catch(e){
+    // 错误处理
+    print(e);
+  }
+}
+```
+
+## 8-2. Stream
+
+Stream 也是用于接收异步事件数据，和 Future 不同的是，它可以接收多个异步操作的结果（成功或失败）。 也就是说，在执行异步任务时，可以通过多次触发成功或失败事件来传递结果数据或错误异常。 Stream 常用于会多次读取数据的异步任务场景，如网络内容下载、文件读写等。
+
+```dart
+Stream.fromFutures([
+  // 1秒后返回结果
+  Future.delayed(Duration(seconds: 1), () {
+    return "hello 1";
+  }),
+  // 抛出一个异常
+  Future.delayed(Duration(seconds: 2),(){
+    throw AssertionError("Error");
+  }),
+  // 3秒后返回结果
+  Future.delayed(Duration(seconds: 3), () {
+    return "hello 3";
+  })
+]).listen((data){
+  print(data);
+}, onError: (e){
+  print(e.message);
+},onDone: (){});
+
+// 上述代码依次输出
+// hello 1
+// Error
+// hello 3
+```
