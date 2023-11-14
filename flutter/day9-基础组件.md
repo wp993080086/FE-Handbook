@@ -381,3 +381,40 @@ class _SwitchAndCheckBoxTestRouteState extends State<SwitchAndCheckBoxTestRoute>
 Checkbox的大小是固定的，无法自定义，而Switch只能定义宽度，高度也是固定的。
 
 # 6. 输入框和表单
+
+Material 组件库中提供了输入框组件TextField和表单组件Form
+
+## 6-1. TextField
+
+TextField用于文本输入
+
+- controller：编辑框的控制器，通过它可以设置/获取编辑框的内容、选择编辑内容、监听编辑文本改变事件。大多数情况下我们都需要显式提供一个controller来与文本框交互。
+- focusNode：用于控制TextField是否占有当前键盘的输入焦点。
+- InputDecoration：用于控制TextField的外观显示，如提示文本、背景颜色、边框等。
+- keyboardType：设置该输入框默认的键盘输入类型。
+    - text：文本键盘
+    - multiline：多行文本，需和maxLines配合使用（设为null或大于1）
+    - number：数字键盘
+    - phone：数字键盘并显示*和#
+    - datetime：日期输入键盘，Android上会显示:和-
+    - emailAddress：电子邮件地址 会显示@和.
+    - url：url输入键盘 会显示/和.
+- textInputAction：设置键盘动作按钮的显示内容，默认是next
+- style：正在编辑的文本样式。
+- textAlign：输入框内编辑文本在水平方向的对齐方式。
+- autofocus：是否自动获取焦点
+- obscureText：是否隐藏正在编辑的文本，用于输入密码的场景等，文本内容会用•替换
+- maxLines：输入框的最大行数，默认为1；如果为null，则无行数限制。
+- maxLength：输入框文本的最大长度 设置后输入框右下角会显示输入的文本计数
+- maxLengthEnforcement：当输入文本长度超过maxLength时如何处理，如截断、超出等。
+- toolbarOptions：长按或鼠标右击时出现的菜单，包括 copy、cut、paste 以及 selectAll
+- onChange：输入框内容改变时的回调函数，也可以通过controller来监听。
+- onEditingComplete：输入框编辑完成时的回调函数。无参数。
+- onSubmitted：输入框编辑完成时的回调函数。接收当前输入内容做为参数。
+- inputFormatters：指定输入格式；当用户输入内容改变时，会根据指定的格式来校验。
+- enable：如果为false，则禁用输入框，不响应输入和事件，显示禁用态样式（在其decoration中定义）
+- cursorWidth：光标宽度
+- cursorRadius：光标圆角
+- cursorColor：光标颜色
+
+## 6-2. Form
