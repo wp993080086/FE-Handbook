@@ -2,7 +2,17 @@
 
 1. [文本及字体样式](#1-文本及样式)
 2. [各种按钮](#2-各种按钮)
-3. [图片和icon](#3-图片和icon)
+3. [图片](#3-图片)
+4. [icon](#4-icon)
+    1. [自定义字体图标](#4-1-自定义字体图标)
+5. [单选开关和复选框](#5-单选开关和复选框)
+6. [输入框和表单](#6-输入框和表单)
+    1. [TextField](#6-1-textfield)
+    2. [Form](#6-2-form)
+    3. [登录界面例子](#6-3-登录界面例子)
+7. [进度指示器](#7-进度指示器)
+    1. [线形LinearProgressIndicator](#7-1-线形linearprogressindicator)
+    2. [环形CircularProgressIndicator](#7-2-环形circularprogressindicator)
 ---
 
 # 1. 文本及样式
@@ -418,3 +428,174 @@ TextField用于文本输入
 - cursorColor：光标颜色
 
 ## 6-2. Form
+
+Form 组件，它可以对输入框进行分组，然后进行一些统一操作，如输入内容校验、输入框重置以及输入内容保存。Form继承自StatefulWidget对象，它对应的状态类为FormState，Form的子孙元素必须是FormField类型，为了方便使用，Flutter 提供了一个TextFormField组件，它继承自FormField类，也是TextField的一个包装类，所以除了FormField定义的属性之外，它还包括TextField的属性。
+
+|属性|描述|
+|--|--|
+|autovalidate|是否自动校验输入内容，默认为false，即只有点击操作按钮时才校验|
+|onWillPop|决定Form所在的路由是否可以直接返回（如点击返回按钮），该回调返回一个Future对象，如果 Future 的最终结果是false，则当前路由不会返回；如果为true，则会返回到上一个路由。此属性通常用于拦截返回按钮|
+|onChanged|Form内容改变时的回调函数，可以用于对输入内容进行校验。|
+
+FormState是Form的State类，可以通过Form.of()或GlobalKey获得。我们可以通过它来对Form的子孙FormField进行统一操作，常用方法如下：
+
+- FormState.validate()：调用Form子孙FormField的validate回调，如果有一个校验失败，则返回false，所有校验失败项都会返回用户返回的错误提示。
+- FormState.save()：调用Form子孙FormField的save回调，用于保存表单内容
+- FormState.reset()：将子孙FormField的内容清空
+
+## 6-3. 登录界面例子
+
+```dart
+import 'package:flutter/material.dart';
+
+class LoginPage extends StatefulWidget {
+  const LoginPage({super.key});
+
+  @override
+  State<LoginPage> createState() {
+    return LoginPageState();
+  }
+}
+
+class LoginPageState extends State<LoginPage> {
+  TextEditingController userName = TextEditingController();
+  TextEditingController password = TextEditingController();
+  final formKey = GlobalKey<FormState>();
+
+  void handleSubmit() {
+    if ((formKey.currentState as FormState).validate()) {
+      if (userName.text.length >= 6 && password.text.length >= 6) {
+        // 提示
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('验证通过！')),
+        );
+      } else {
+        // 清除内容
+        formKey.currentState?.reset();
+        // 提示
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('账号和密码长度不能低于6位数！')),
+        );
+      }
+    } else {
+      debugPrint('校验失败！');
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        backgroundColor: Theme.of(context).colorScheme.inversePrimary,
+        title: const Text('Login Page'),
+      ),
+      body: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Expanded(
+            child: SingleChildScrollView(
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 20),
+                child: Form(
+                  key: formKey,
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      TextFormField(
+                        autofocus: false,
+                    controller: userName,
+                        decoration: const InputDecoration(
+                          labelText: "账号：",
+                          hintText: "请输入账号",
+                          icon: Icon(Icons.person),
+                        ),
+                        validator: (v) {
+                          return v!.trim().isNotEmpty ? null : '账号不能为空';
+                        },
+                      ),
+                      TextFormField(
+                        autofocus: false,
+                        controller: password,
+                        decoration: const InputDecoration(
+                          labelText: "密码：",
+                          hintText: "请输入密码",
+                          icon: Icon(Icons.lock),
+                        ),
+                        obscureText: true,
+                        validator: (v) {
+                          return v!.trim().isNotEmpty ? null : '密码不能为空';
+                        },
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+          ),
+          Padding(
+            padding: const EdgeInsets.symmetric(vertical: 16),
+            child: Row(
+              children: [
+                Expanded(
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 16),
+                    child: ElevatedButton(
+                      onPressed: handleSubmit,
+                      child: const Padding(
+                        padding: EdgeInsets.all(16.0),
+                        child: Text('登录'),
+                      ),
+                    ),
+                  ),
+                )
+              ],
+            ),
+          )
+        ],
+      ),
+    );
+  }
+}
+```
+
+# 7. 进度指示器
+
+Material 组件库中提供了两种进度指示器：LinearProgressIndicator和CircularProgressIndicator，它们都可以同时用于精确的进度指示和模糊的进度指示。
+
+## 7-1. 线形LinearProgressIndicator
+
+LinearProgressIndicator 是一个线性进度条，它显示一个进度条，可以显示当前的进度和总进度。没有提供尺寸参数，都是取父容器的尺寸作为绘制的边界，也就是父容器的宽高。
+
+```dart
+// 模糊进度条（会执行一个动画）
+LinearProgressIndicator(
+  backgroundColor: Colors.grey[200],
+  valueColor: AlwaysStoppedAnimation(Colors.blue),
+),
+
+// 进度条显示50%
+LinearProgressIndicator(
+  backgroundColor: Colors.grey[200],
+  valueColor: AlwaysStoppedAnimation(Colors.blue),
+  value: .5, 
+)
+```
+
+## 7-2. 环形CircularProgressIndicator
+
+CircularProgressIndicator 是一个环形进度条，它显示一个进度条，可以显示当前的进度和总进度。没有提供尺寸参数，都是取父容器的尺寸作为绘制的边界，也就是父容器的宽高。
+
+```dart
+// 模糊进度条（会执行一个旋转动画）
+CircularProgressIndicator(
+  backgroundColor: Colors.grey[200],
+  valueColor: AlwaysStoppedAnimation(Colors.blue),
+),
+
+// 进度条显示50%，会显示一个半圆
+CircularProgressIndicator(
+  backgroundColor: Colors.grey[200],
+  valueColor: AlwaysStoppedAnimation(Colors.blue),
+  value: .5,
+),
+```
