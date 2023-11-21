@@ -20,10 +20,10 @@
 
 ```dart
 var name = "李四"
-
-name = "张三" // 对
-
-name = 1000 // 错
+/// 对
+name = "张三"
+/// 错
+name = 1000
 ```
 
 - Object
