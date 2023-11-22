@@ -1,6 +1,18 @@
 # 📚 目录
 
 1. [原始指针事件处理](#1-原始指针事件处理)
+    1. [Listener组件](#1-1-listener组件)
+    2. [忽略指针事件](#1-2-忽略指针事件)
+2. [手势识别](#2-手势识别)
+    1. [单击双击和长按](#2-1-单击双击和长按)
+    2. [拖动和滑动](#2-2-拖动和滑动)
+    3. [缩放](#2-3-缩放)
+    4. [GestureRecognizer语义手势](#2-4-gesturerecognizer语义手势)
+3. [事件机制](#3-事件机制)
+4. [通知](#4-通知)
+    1. [监听通知](#4-1-监听通知)
+    2. [自定义通知](#4-2-自定义通知)
+    3. [阻止冒泡](#4-3-阻止冒泡)
 ---
 
 # 1. 原始指针事件
@@ -411,6 +423,61 @@ class HomePageState extends State<HomePage> {
 }
 
 /// 定义一个通知类，继承自Notification类
+class MyNotification extends Notification {
+  MyNotification(this.msg);
+  final String msg;
+}
+```
+
+# # 4-3. 阻止冒泡
+
+Flutter 中的通知机制，默认是冒泡的，Flutter 中通过通知冒泡实现了一套自低向上的消息传递机制，这个和 Web 开发中浏览器的事件冒泡原理类似。即如果一个通知被一个 Widget 消费了，那么这个通知就会被传递，继续传递到父节点。如下例子，将onNotification的返回值修改为true，则通知不会继续传递，即不会继续向上冒泡。
+
+```dart
+import 'package:flutter/material.dart';
+
+/// 定义
+class HomePage extends StatefulWidget {
+  const HomePage({super.key});
+
+  @override
+  State<HomePage> createState() => HomePageState();
+}
+
+/// 实现
+class HomePageState extends State<HomePage> {
+  String myMsg = '';
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+        appBar: AppBar(
+          title: const Text('Flutter Home'),
+        ),
+        body: NotificationListener<MyNotification>(
+          onNotification: (notification) {
+            myMsg += notification.msg.toString();
+            debugPrint(myMsg);
+            return false;
+          },
+          child: NotificationListener<MyNotification>(
+            onNotification: (notification) {
+              /// 返回true 阻止冒泡
+              return true;
+            },
+            child: ListView.builder(
+              itemCount: 100,
+              itemBuilder: (context, index) {
+                return ListTile(title: Text("$index"),onTap: () {
+                  MyNotification("Hi").dispatch(context);
+                });
+              },
+            ),
+          ),
+        ));
+  }
+}
+
 class MyNotification extends Notification {
   MyNotification(this.msg);
   final String msg;
