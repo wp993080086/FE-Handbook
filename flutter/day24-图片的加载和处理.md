@@ -1,0 +1,1 @@
+https://github.com/fluttercandies/extended_image/blob/master/README-ZH.md
