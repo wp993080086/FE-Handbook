@@ -105,6 +105,14 @@
 - [day17-文件操作](flutter/day17-文件操作.md)
 - [day18-网络请求](flutter/day18-网络请求.md)
 - [day19-国际化支持](flutter/day19-国际化支持.md)
+- [day20-使用SafeArea组件处理各机型的安全距离](flutter/day20-使用SafeArea组件处理各机型的安全距离.md)
+- 
+- [flutter-使用extended_image操作图片的加载和状态处理](flutter/flutter-使用extended_image操作图片的加载和状态处理.md)
+- [flutter-使用GestureDetector识别手势事件](flutter/flutter-使用GestureDetector识别手势事件.md)
+- [flutter-使用permission_handler进行系统权限的申请和操作](flutter/flutter-使用permission_handler进行系统权限的申请和操作.md)
+- [flutter-事件监听EventBus](flutter/flutter-事件监听EventBus.md)
+- [flutter-图片缓存的方案和问题处理](flutter/flutter-图片缓存的方案和问题处理.md)
+- [flutter-Text文本出现黄色下划线](flutter/flutter-Text文本出现黄色下划线.md)
 
 # 📚 面试题
 

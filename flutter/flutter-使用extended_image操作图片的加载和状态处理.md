@@ -3,6 +3,7 @@
 1. [介绍](#1-介绍)
 2. [属性介绍](#2-属性介绍)
 3. [使用](#3-使用)
+
 ---
 
 # 1. 介绍
@@ -126,4 +127,183 @@ ExtendedImage.network(
     }
   }
 )
+```
+
+# 4. 完整封装
+
+封装思路：关键参数必传，次要参数有默认值，统一加载中、加载失败、加载成功的状态，统一处理图片加载失败的情况，统一处理图片加载成功的情况
+
+封装代码：
+
+> 注意，这里使用了屏幕适配插件 flutter_screenutil，全局使用.w 做尺寸单位。
+
+```dart
+import 'package:flutter/material.dart';
+import 'package:extended_image/extended_image.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
+
+/// 加载网络图片
+class MyLoadNetworkImage extends StatelessWidget {
+  /// 图片地址
+  final String imageUrl;
+
+  /// 背景色
+  final Color bgColor;
+
+  /// 失败回调
+  final Function()? onFailed;
+
+  /// 成功回调
+  final Function()? onSucceed;
+
+  /// 宽度
+  final double? width;
+
+  /// 高度
+  final double? height;
+
+  /// 是否缓存
+  final bool cache;
+
+  /// 图片适应方式
+  final BoxFit fit;
+
+  /// 图片模式
+  final ExtendedImageMode mode;
+
+  /// 图片手势设置 需配合 mode = ExtendedImageMode.gesture
+  final GestureConfig Function(ExtendedImageState)? initGestureConfigHandler;
+
+  /// 图片Load动画
+  final bool loadAnime;
+
+  /// 压缩率
+  final double compressionRatio;
+
+  /// 缓存宽度
+  final int? cacheWidth;
+
+  /// 缓存高度
+  final int? cacheHeight;
+
+  /// Load图宽高
+  final double loadBoxWAndH;
+
+  const MyLoadNetworkImage(
+      {Key? key,
+      required this.imageUrl,
+      this.onFailed,
+      this.onSucceed,
+      this.bgColor = Colors.black,
+      this.width,
+      this.height,
+      this.cache = true,
+      this.fit = BoxFit.fitHeight,
+      this.mode = ExtendedImageMode.none,
+      this.initGestureConfigHandler,
+      this.loadAnime = false,
+      this.compressionRatio = 1.0,
+      this.cacheWidth,
+      this.cacheHeight,
+      this.loadBoxWAndH = 64})
+      : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return ExtendedImage.network(
+      imageUrl,
+      width: width,
+      height: height,
+      fit: fit,
+      cache: cache,
+      initGestureConfigHandler: initGestureConfigHandler,
+      mode: mode,
+      compressionRatio: compressionRatio,
+      cacheMaxAge: Duration(hours: 24),
+      cacheWidth: cacheWidth,
+      cacheHeight: cacheHeight,
+
+      /// 加载状态回调
+      loadStateChanged: (ExtendedImageState state) {
+        switch (state.extendedImageLoadState) {
+          /// 加载中
+          case LoadState.loading:
+            return loadAnime
+                ? Container(
+                    constraints: BoxConstraints.expand(),
+                    alignment: Alignment.center,
+                    child: SvgPicture.asset(xxxxx.loadingImage),
+                  )
+                : WaitOrLoadWidget(radius: loadBoxWAndH);
+
+          /// 加载成功
+          case LoadState.completed:
+            if (onSucceed != null) {
+              onSucceed!();
+            }
+            return state.completedWidget;
+
+          /// 加载失败
+          case LoadState.failed:
+            if (onFailed != null) {
+              onFailed!();
+            }
+            return LoadFailedWidget(callback: state.reLoadImage);
+        }
+      },
+    );
+  }
+}
+
+/// 等待中或加载中的组件
+class WaitOrLoadWidget extends StatelessWidget {
+  final double radius;
+  const WaitOrLoadWidget({Key? key, this.radius = 64}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    double myRadius = radius == 64 ? 64.w : radius;
+
+    return Container(
+      color: Colors.black,
+      alignment: Alignment.center,
+      constraints: BoxConstraints.expand(),
+      child: SizedBox(
+        width: myRadius,
+        height: myRadius,
+        child: SvgPicture.asset(xxxxx.loadImage),
+      ),
+    );
+  }
+}
+
+/// 加载失败的组件
+class LoadFailedWidget extends StatelessWidget {
+  final double radius;
+
+  /// 回调函数
+  final Function() callback;
+
+  const LoadFailedWidget({Key? key, required this.callback, this.radius = 64})
+      : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    double myRadius = radius == 64 ? 64.w : radius;
+
+    return Container(
+      color: Colors.black,
+      alignment: Alignment.center,
+      constraints: BoxConstraints.expand(),
+      child: GestureDetector(
+        onTap: callback,
+        child: SizedBox(
+          width: myRadius,
+          height: myRadius,
+          child: SvgPicture.asset(xxxxx.failedImage),
+        ),
+      ),
+    );
+  }
+}
 ```
