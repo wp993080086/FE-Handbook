@@ -2,8 +2,9 @@
 
 1. [介绍](#1-介绍)
 2. [属性介绍](#2-属性介绍)
-3. [使用](#3-使用)
-
+3. [使用例子](#3-使用例子)
+4. [获取缓存数据并下载](#4-获取缓存数据并下载)
+5. [完整封装](#5-完整封装)
 ---
 
 # 1. 介绍
@@ -90,13 +91,13 @@ ExtendedImage.network(
   initGestureConfigHandler: (state) {
     return GestureConfig(
       // 缩放最小值
-      minScale: 0.8,
+      minScale: 1.0,
       // 缩放动画最小值 当缩放结束时回到 minScale 值
       animationMinScale: 0.8,
       // 缩放最大值
       maxScale: 2.0,
       // 缩放动画最大值 当缩放结束时回到 maxScale 值
-      animationMaxScale: 3.5,
+      animationMaxScale: 2.5,
       // 缩放拖拽速度
       speed: 1.0,
       // 拖拽惯性速度
@@ -129,7 +130,46 @@ ExtendedImage.network(
 )
 ```
 
-# 4. 完整封装
+# 4. 获取缓存数据并下载
+
+这里是读取缓存数据然后下载，下载使用了(image_gallery_saver)[https://pub.dev/packages/image_gallery_saver]这个库。如果缓存里没有，则换成Dio下载。
+
+```dart
+import 'dart:typed_data';
+import 'package:dio/dio.dart';
+import 'package:extended_image/extended_image.dart';
+import 'package:image_gallery_saver/image_gallery_saver.dart';
+
+/// 下载网络图片（先读缓存资源，缓存没有再重新获取资源）
+Future<bool> downloadNetworkImage(String imagePath) async {
+  const String prefix = 'App-Save';
+  // 获取缓存图片
+  var cacheData = await getNetworkImageData(imagePath, useCache: true);
+  // 获取当前时间戳
+  int timestamp = DateTime.now().millisecondsSinceEpoch;
+  // 将时间戳转换为可读的日期格式
+  String dateTime = DateTime.fromMillisecondsSinceEpoch(timestamp).toString();
+  // 拼接名字
+  String saveName = '$prefix-$dateTime';
+  // 下载逻辑
+  late dynamic result;
+  // 如果缓存图片不为空
+  if (cacheData != null) {
+    result = await ImageGallerySaver.saveImage(cacheData,
+        quality: 100, name: saveName);
+  } else {
+    var response = await Dio()
+        .get(imagePath, options: Options(responseType: ResponseType.bytes));
+    result = await ImageGallerySaver.saveImage(
+        Uint8List.fromList(response.data),
+        quality: 100,
+        name: saveName);
+  }
+  return result['isSuccess'] ? true:false;
+}
+```
+
+# 5. 完整封装
 
 封装思路：关键参数必传，次要参数有默认值，统一加载中、加载失败、加载成功的状态，统一处理图片加载失败的情况，统一处理图片加载成功的情况
 
