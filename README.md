@@ -106,7 +106,7 @@
 - [day18-网络请求](flutter/day18-网络请求.md)
 - [day19-国际化支持](flutter/day19-国际化支持.md)
 - [day20-使用SafeArea组件处理各机型的安全距离](flutter/day20-使用SafeArea组件处理各机型的安全距离.md)
-- 
+- 下面就是一些开发技巧和解决方案
 - [flutter-使用extended_image操作图片的加载和状态处理](flutter/flutter-使用extended_image操作图片的加载和状态处理.md)
 - [flutter-使用GestureDetector识别手势事件](flutter/flutter-使用GestureDetector识别手势事件.md)
 - [flutter-使用permission_handler进行系统权限的申请和操作](flutter/flutter-使用permission_handler进行系统权限的申请和操作.md)
