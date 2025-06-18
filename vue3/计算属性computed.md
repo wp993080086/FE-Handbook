@@ -7,7 +7,6 @@
 5. [使用场景](#5-使用场景)
 6. [computed 和 methods 的区别](#6-computed和methods的区别)
 7. [computed 和 watch 的区别](#7-computed和watch的区别)
-
 ---
 
 # 1. 计算属性 computed
@@ -18,7 +17,7 @@
 
 如下例子：handleDouble 依赖了 total，只有 total 更新后，handleDouble 才会重新计算，并返回一个新值。
 
-```javascript
+```vue
 <template>
   <div class="home_box">
     <h1>{{ handleDouble }}</h1>
@@ -40,7 +39,7 @@ const handleDouble = computed(() => {
 
 如下例子：在setup中，我给 handleDouble 赋值了数字 6，在 template 模板中，最终显示的却是数字 14，这是因为 handleDouble 的 set 方法，会触发 total 的 set 方法，从而触发 handleDouble 的 get 方法，重新计算 handleDouble 的值。
 
-```javascript
+```vue
 <template>
   <div class="home_box">
     <h1>{{ handleDouble }}</h1>
@@ -69,7 +68,7 @@ const handleDouble = computed({
 
 如下例子：computed 也是可以传递参数的，采用闭包的方式，返回一个函数，该函数接收的参数就是你传递的参数。
 
-```javascript
+```vue
 <template>
   <div class="home_box">
     <h1>{{ checkcCloudless(false) }}</h1>

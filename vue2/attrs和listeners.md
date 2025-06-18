@@ -10,7 +10,7 @@
 
 # 1. attrs
 
-$attrs包含了父作用域中不作为 prop 被识别 (且获取) 的 attribute 绑定 (class 和 style 除外)。当一个组件没有声明任何 prop 时，这里会包含所有父作用域的绑定 (class 和 style 除外)，并且可以通过 v-bind="$attrs" 传入内部组件。也就是说，再创建子组件的时候，有的属性绑定没有写在 props 里，则可以通过 attrs 传递过去。
+`$attrs`包含了父作用域中不作为 prop 被识别 (且获取) 的 attribute 绑定 (class 和 style 除外)。当一个组件没有声明任何 prop 时，这里会包含所有父作用域的绑定 (class 和 style 除外)，并且可以通过 v-bind="$attrs" 传入内部组件。也就是说，再创建子组件的时候，有的属性绑定没有写在 props 里，则可以通过 attrs 传递过去。
 
 **特性解析**
 
@@ -80,7 +80,7 @@ export default {
 
 # 2. listeners
 
-$listeners包含了父作用域中的 (不含 .native 修饰器的) v-on 事件监听器。它可以通过 v-on="$listeners" 传入内部组件，在创建更高层次的组件时非常有用。
+`$listeners`包含了父作用域中的 (不含 .native 修饰器的) v-on 事件监听器。它可以通过 v-on="$listeners" 传入内部组件，在创建更高层次的组件时非常有用。
 
 **特性解析**
 
@@ -282,7 +282,7 @@ export default {
 
 - 优先级问题：如果子组件定义了与父组件相同的 prop 或事件处理，子组件的定义会覆盖父组件的
 - 性能考虑：在大型应用中过度使用属性透传可能会影响性能
-- Vue 3 中的变化：Vue 3 中$listeners已被移除，其功能合并到了$attrs中
+- Vue3中的变化：Vue3中$listeners已被移除，其功能合并到了$attrs中
 
 # 4. 应用场景
 

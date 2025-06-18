@@ -10,12 +10,15 @@
         3. [事件按键修饰符](#2-3-3-事件按键修饰符)
         4. [插槽](#2-3-4-插槽)
 3. [编译JSX](#3-编译jsx)
-
+4. [典型应用场景](#4-典型应用场景)
+    1. [高阶组件示例](#4-1-高阶组件示例)
+    2. [复杂的动态ui示例](#4-2-复杂的动态ui示例)
+5. [性能](#5-性能)
 ---
 
 # 1. 渲染函数Render
 
-Vue 推荐在绝大多数情况下使用模板来创建你的 HTML。然而在一些场景中，你真的需要 JavaScript 的完全编程的能力。这时你可以用渲染函数 render，它比模板更接近编译器，直接生成 VNode 虚拟 DOM。
+Vue 推荐在绝大多数情况下使用模板来创建你的 HTML。然而在一些场景中，你真的需要 JavaScript 的完全编程的能力。这时你可以用[渲染函数 render](https://v2.cn.vuejs.org/v2/guide/render-function.html)，它比模板更接近编译器，直接生成 VNode 虚拟 DOM。
 
 下面是一个对比例子，通过 level prop 来动态生成标题的组件
 
@@ -68,7 +71,8 @@ export default {
 		},
 	},
 	render(createElement) {
-		return createElement(`h${this.level}`, { class: [`title${this.level}`] }, this.$slots.default)
+		const children = this.$slots.default || [];
+		return createElement(`h${this.level}`, { class: [`title${this.level}`] }, children)
 	},
 }
 ```
@@ -81,12 +85,26 @@ export default {
 
 createElement 函数有三个参数：
 
-1. 必填。一个 HTML 标签名、组件名，类型：{String | Object | Function}
-2. 可选。一个与模板中属性对应的数据对象，也就是组件的属性
+1. 必填。一个 HTML 标签名、组件名，类型：{String | Object | Function}（也可以是组件选项对象或返回组件选项的函数）
+2. 可选。一个与模板中属性对应的数据对象，也就是与模板中属性对应的数据对象，包含组件属性、DOM 属性、事件等。
 3. 可选。子级虚拟节点 (VNodes)，由 `createElement()` 构建而成，也可以使用字符串来生成"文本虚拟"节点。
+
+**语法：**
 
 ```javascript
 createElement(TagName，Option，Content)
+```
+
+**第一个参数也可以是组件选项对象或返回组件选项的函数，例如：**
+
+```javascript
+// ：
+createElement({
+  template: '<div>{{ msg }}</div>',
+  data() {
+    return { msg: 'Hello' };
+  }
+});
 ```
 
 ## 2-2. Option数据对象
@@ -154,10 +172,6 @@ createElement 函数的第二个参数，是一个与模板中属性对应的数
 下面是一个 Button 按钮的例子：
 
 ```javascript
-const handleClick = () => {
-	console.log('按钮被点击了！')
-}
-
 export default {
 	name: 'Button',
 	props: {
@@ -166,6 +180,11 @@ export default {
 			required: true,
 		},
 	},
+	methods: {
+    handleClick() {
+      console.log('按钮被点击了！');
+    }
+  },
 	render(h) {
 		return h(
 			'div',
@@ -187,7 +206,7 @@ export default {
 
 ### 2-3-1. v-if和else
 
-- 模板写法
+- 模板写法：
 
 ```javascript
 <ul v-if="items.length">
@@ -196,18 +215,18 @@ export default {
 <p v-else>空空如也</p>
 ```
 
-- render 函数写法
+- render 函数写法：
 
 ```javascript
 export default {
 	// 省略......
 	render(h) {
-		if (items.length) {
-			return items.map((item) => h('li', { key: item }, item))
+		if (this.items.length) {
+			return h('ul', this.items.map((item) => h('li', { key: item }, item)));
 		} else {
-			return h('p', '空空如也')
+			return h('p', '空空如也');
 		}
-	},
+	}
 }
 ```
 
@@ -226,6 +245,7 @@ render 函数中没有与 v-model 的直接对应，需要自己实现相应的�
 ```javascript
 export default {
 	// 省略......
+	props: ['message'],
 	render(h) {
 		const self = this
 		return h('input', {
@@ -252,8 +272,7 @@ export default {
 | .passive      | &    | 滚动事件的默认行为将会立即触发，而不是等到事件触发完再触发 |
 | .capture      | !    | 捕获模式                                                   |
 | .once         | ~    | 只触发一次回调                                             |
-| .capture.once | ~!   | 捕获模式                                                   |
-| .once.capture | ~!   | 捕获模式                                                   |
+| .capture.once | ~!   | 只触发一次回调 的 捕获模式                                                   |
 
 例子如下：
 
@@ -262,7 +281,7 @@ on: {
   '!click': this.func,
   '~keyup': this.func,
   '~!mouseover': this.func,
-  keyup: function(event) {
+  keyup: (event) => {
     // 如果触发事件的元素不是事件绑定的元素
     if (event.target !== event.currentTarget) return
     // 如果按下去的不是 enter 键或者没有同时按下 shift 键
@@ -275,12 +294,13 @@ on: {
 }
 ```
 
-| 修饰符   | 操作                                             | 说明                   |
+| 修饰符   | 操作                                              | 说明                   |
 | -------- | ------------------------------------------------ | ---------------------- |
 | .stop    | event.stopPropagation()                          | 阻止冒泡               |
 | .prevent | event.preventDefault()                           | 阻止元素发生默认的行为 |
 | .self    | if (event.target !== event.currentTarget) return | 自身触发               |
 | .enter   | if (event.keyCode !== 13) return                 | 按键匹配               |
+| .shift   | if (!event.shiftKey) return              				| 按键匹配               |
 
 ### 2-3-4. 插槽
 
@@ -376,7 +396,7 @@ export default {
 List<template>
   <div class="home_box">
     <List :data="list">
-      <template #default="scope">
+      <template slot-scope="scope">
         <span>{{ scope.data }}</span>
       </template>
     </List>
@@ -400,4 +420,157 @@ export default {
 
 # 3. 编译jsx
 
-如果你写了很多 render 函数，可能会觉得这样的代码写起来很痛苦，并且可读性也不好。这时候可以使用 JSX 插件，[传送门](https://github.com/vuejs/jsx-vue2)
+如果你写了很多 render 函数，可能会觉得这样的代码写起来很痛苦，并且可读性也不好。这时候可以使用 JSX 插件：[传送门](https://github.com/vuejs/jsx-vue2)
+
+- 使用JSX的render函数示例:
+
+```javascript
+render() {
+  return (
+    <div class={`title${this.level}`}>
+      {this.$slots.default}
+    </div>
+  );
+}
+```
+
+# 4. 典型应用场景
+
+render 函数非常适合实现高阶组件以及复杂的动态 UI，因为它可以动态创建和组合组件。
+
+## 4-1 高阶组件示例
+
+```javascript
+// 动态加载组件
+export default function asyncComponentLoader(componentName) {
+  return {
+    name: `AsyncLoader(${componentName})`,
+    data() {
+      return {
+        Component: null,
+        loading: true,
+        error: null,
+      };
+    },
+    async created() {
+      try {
+        const componentModule = await import(`@/components/${componentName}.vue`);
+        this.Component = componentModule.default || componentModule;
+      } catch (err) {
+        this.error = err.message;
+      } finally {
+        this.loading = false;
+      }
+    },
+    render(h) {
+      if (this.loading) return h('div', 'Loading...');
+      if (this.error) return h('div', { style: { color: 'red' } }, this.error);
+      if (this.Component) return h(this.Component, { props: this.$props });
+      return h('div', 'Component not found');
+    },
+  };
+}
+```
+
+## 4-2 复杂的动态ui示例
+
+```javascript
+// 动态表单生成器
+export default {
+  name: 'DynamicForm',
+  props: {
+    formConfig: {
+      type: Array,
+      required: true,
+    },
+    formData: {
+      type: Object,
+      default: () => ({}),
+    },
+  },
+  methods: {
+    handleInput(field, event) {
+      this.$emit('input', { ...this.formData, [field]: event.target.value });
+    },
+  },
+  render(h) {
+    const formItems = this.formConfig.map((field) => {
+      switch (field.type) {
+        case 'text':
+          return h('div', [
+            h('label', field.label),
+            h('input', {
+              attrs: { type: 'text', placeholder: field.placeholder },
+              domProps: { value: this.formData[field.name] || '' },
+              on: { input: (e) => this.handleInput(field.name, e) },
+            }),
+          ]);
+        case 'select':
+          return h('div', [
+            h('label', field.label),
+            h('select', {
+              domProps: { value: this.formData[field.name] || '' },
+              on: { input: (e) => this.handleInput(field.name, e) },
+            }, field.options.map(option => 
+              h('option', { attrs: { value: option.value } }, option.label)
+            )),
+          ]);
+        case 'checkbox':
+          return h('div', [
+            h('label', [
+              h('input', {
+                attrs: { type: 'checkbox' },
+                domProps: { checked: this.formData[field.name] || false },
+                on: { input: (e) => this.handleInput(field.name, e) },
+              }),
+              field.label,
+            ]),
+          ]);
+        default:
+          return null;
+      }
+    });
+
+    return h('form', {
+      on: {
+        submit: (e) => {
+          e.preventDefault();
+          this.$emit('submit', this.formData);
+        },
+      }
+    }, [
+      ...formItems,
+      h('button', { attrs: { type: 'submit' } }, '提交')
+    ]);
+  },
+};
+
+// 使用示例
+<DynamicForm 
+  :form-config="formConfig" 
+  :form-data="formData" 
+  @input="formData = $event" 
+  @submit="handleSubmit" 
+/>
+
+// 配置示例
+formConfig: [
+  { type: 'text', name: 'username', label: '用户名', placeholder: '请输入用户名' },
+  { type: 'text', name: 'email', label: '邮箱', placeholder: '请输入邮箱' },
+  { type: 'select', name: 'role', label: '角色', options: [
+    { value: 'admin', label: '管理员' },
+    { value: 'user', label: '普通用户' },
+  ]},
+  { type: 'checkbox', name: 'agreement', label: '我同意条款' },
+],
+```
+
+# 5. 性能
+
+render 函数通常比 template 性能更高，原因如下：
+
+1. 避免了模板编译过程
+2. 可以更精确地控制虚拟 DOM 的创建
+3. 在复杂动态 UI 场景中减少不必要的重新渲染
+
+但请注意，不要为了性能而过度使用 render 函数，保持代码可读性同样重要。在大多数情况下，template 的性能已经足够好，没必要为了什么原因全部使用render。
